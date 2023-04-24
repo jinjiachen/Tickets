@@ -56,7 +56,7 @@ def ssky():
 
     #选择时间
     driver.find_element(By.XPATH,'//div[@class="row index__date"]/div[1]/p[2]').click()
-    driver.find_element(By.XPATH,'//div[@class="wh_content"][2]/div[30]').click()
+    driver.find_element(By.XPATH,'//div[@class="wh_content"][2]/div[33]').click()
 
     #开始查询
     driver.find_element(By.XPATH,'//div[@class="row index__search"]//button').click()
@@ -88,6 +88,9 @@ def ssky():
     time.sleep(1)
     driver.find_element(By.XPATH,'//div[@style="padding-left: 216px; margin-top: 20px;"]//button').click()
 
+
+    #
+    driver.find_element(By.XPATH,'//div[@class="modal-content"]/div[@class="row"][2]/div[2]').click()
 
 
 
