@@ -7,6 +7,7 @@ Date: 2024-04-20
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from lxml import etree
 import urllib
 import requests
@@ -66,12 +67,25 @@ def ssky():
 
 
     #添加联系人
+    url='https://www.ssky123.com/online_booking_pc/#/info'
+    driver.get(url)
+    time.sleep(1)
 #    driver.find_element(By.XPATH,'//div[@style="background: rgb(244, 244, 244); margin-top: 10px;"]/p[2]/div/div').click()
-    driver.find_element(By.XPATH,'//div[@class="q-option cursor-pointer no-outline row inline no-wrap items-center selectperson q-checkbox q-focusable"]').click()
+    driver.find_element(By.XPATH,'//div[@class="q-option cursor-pointer no-outline row inline no-wrap items-center selectperson q-checkbox q-focusable"]//span').click()
 #    driver.find_element(By.XPATH,'//div[@style="background: rgb(244, 244, 244); margin-top: 10px;"]/p[2]/div//input').click()
 #    driver.find_element(By.XPATH,'//i[@class="q-icon q-checkbox-icon cursor-pointer material-icons"][1]').click()
+#    driver.find_element(By.XPATH,'').click
+#    driver.find_element(By.XPATH,'//div[@class="q-option-inner relative-position text-faded"]/input').click()
+    selector=etree.HTML(driver.page_source)
+    text=selector.xpath('//div[@class="q-option cursor-pointer no-outline row inline no-wrap items-center selectperson q-checkbox q-focusable"]/span/text()')
+    print(driver.page_source)
+    print(text)
+
+    #定位联系人
+#    driver.find_element(By.XPATH,'//div[@style="background: rgb(244, 244, 244); margin-top: 10px;"]').click().send_keys(keys.TAB).send_keys(keys.SPACE)
 
     #下单
+    time.sleep(1)
     driver.find_element(By.XPATH,'//div[@style="padding-left: 216px; margin-top: 20px;"]//button').click()
 
 
