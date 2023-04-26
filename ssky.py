@@ -8,6 +8,7 @@ Date: 2024-04-20
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+import pyautogui
 from lxml import etree
 import urllib
 import requests
@@ -32,6 +33,7 @@ def Driver():
 #    driver=webdriver.Chrome(chrome_options=options,executable_path=path)
 #    driver=webdriver.Chrome(path,chrome_options=options)
     driver=webdriver.Chrome(chrome_options=options)
+    driver.maximize_window()
     #driver.set_page_load_timeout(10)
     #driver.set_script_timeout(10)
     print('starting')
@@ -47,51 +49,74 @@ def ssky():
 
     url='https://www.ssky123.com/online_booking_pc/#/index'
     driver.get(url)
-    time.sleep(3)
+    time.sleep(1)
 
     #以下是出发和到达港口的选择
-    driver.find_element(By.XPATH,'//div[@class="index__content"]/div[@class="row index__place"][1]/div[1]').click()
-    driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[1]/div/div/div[7]').click()
-    driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[2]/div/div[2]').click()
+    while True:
+        try:
+            driver.find_element(By.XPATH,'//div[@class="index__content"]/div[@class="row index__place"][1]/div[1]').click()
+            driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[1]/div/div/div[7]').click()
+#            driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[2]/div/div[2]').click()#到达：shengshan
+            driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[2]/div/div[1]').click()#到达：sijiao
+            print('港口选择完毕')
+            break
+        except:
+            print('重新选择港口信息!')
+            driver.refresh()
+            time.sleep(2)
+
 
     #选择时间
-    driver.find_element(By.XPATH,'//div[@class="row index__date"]/div[1]/p[2]').click()
-    driver.find_element(By.XPATH,'//div[@class="wh_content"][2]/div[33]').click()
+    while True:
+        try:
+            driver.find_element(By.XPATH,'//div[@class="row index__date"]/div[1]/p[2]').click()
+            driver.find_element(By.XPATH,'//div[@class="wh_content"][2]/div[35]').click()
+            break
+        except:
+            print('重新选择时间!')
+            driver.refresh()
+
 
     #开始查询
-    driver.find_element(By.XPATH,'//div[@class="row index__search"]//button').click()
+    while True:
+        try:
+            driver.find_element(By.XPATH,'//div[@class="row index__search"]//button').click()
+            break
+            print('开始查询!')
+        except:
+            print('重新查询!')
+
 
     #booking
     time.sleep(1)
-    driver.find_element(By.XPATH,'//div[@class="list__content"]/div/p[8]/span').click()
+    driver.find_element(By.XPATH,'//div[@class="list__content"]/div[29]/p[8]/span').click()
 
 
     #添加联系人
     url='https://www.ssky123.com/online_booking_pc/#/info'
     driver.get(url)
     time.sleep(1)
-#    driver.find_element(By.XPATH,'//div[@style="background: rgb(244, 244, 244); margin-top: 10px;"]/p[2]/div/div').click()
     driver.find_element(By.XPATH,'//div[@class="q-option cursor-pointer no-outline row inline no-wrap items-center selectperson q-checkbox q-focusable"]//span').click()
-#    driver.find_element(By.XPATH,'//div[@style="background: rgb(244, 244, 244); margin-top: 10px;"]/p[2]/div//input').click()
-#    driver.find_element(By.XPATH,'//i[@class="q-icon q-checkbox-icon cursor-pointer material-icons"][1]').click()
-#    driver.find_element(By.XPATH,'').click
-#    driver.find_element(By.XPATH,'//div[@class="q-option-inner relative-position text-faded"]/input').click()
-    selector=etree.HTML(driver.page_source)
-    text=selector.xpath('//div[@class="q-option cursor-pointer no-outline row inline no-wrap items-center selectperson q-checkbox q-focusable"]/span/text()')
-    print(driver.page_source)
-    print(text)
+#    selector=etree.HTML(driver.page_source)
+#    print(driver.page_source)
 
-    #定位联系人
-#    driver.find_element(By.XPATH,'//div[@style="background: rgb(244, 244, 244); margin-top: 10px;"]').click().send_keys(keys.TAB).send_keys(keys.SPACE)
 
     #下单
     time.sleep(1)
+    print('下单前的句柄',driver.window_handles)
     driver.find_element(By.XPATH,'//div[@style="padding-left: 216px; margin-top: 20px;"]//button').click()
 
 
-    #
-    driver.find_element(By.XPATH,'//div[@class="modal-content"]/div[@class="row"][2]/div[2]').click()
+    #使用模拟点击的方式确认订单
+#    pyautogui.click(1658,669,duration=0.5)
+#    pyautogui.click(1384,917,duration=0.5)
+#    pyautogui.click(1384,917,duration=0.5)
+#    pyautogui.click(1040,902,duration=0.5)
 
+    pyautogui.click(1658,669,duration=0.2)
+    pyautogui.click(1384,917,duration=0.2)
+    pyautogui.click(1384,917,duration=0.2)
+    pyautogui.click(1040,902,duration=0.2)
 
 
 if __name__ == '__main__':
