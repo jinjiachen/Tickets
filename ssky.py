@@ -14,6 +14,9 @@ import urllib
 import requests
 import os
 import time
+from notification import notify
+from notification import load_config
+
 
 def Driver():
     #Chrom的配置
@@ -44,9 +47,26 @@ def ssky():
     #手动登录
     login_url='https://www.ssky123.com/online_booking_pc/#/login'
     driver.get(login_url)
-    input('请登录，登录后按任意键继续！')
+#    input('请登录，登录后按任意键继续！')
 
+    #定时
+    start=input('请输入开始运行的时间(HH:MM:SS)')
+    while True:
+        print(time.strftime("%H:%M:%S"))
+        if time.strftime("%H:%M:%S")==start:
+            time.sleep(0.8)#延迟0.2s
+            break
 
+    #自动登录
+    conf=load_config()
+    username=conf.get('ssky','user')
+    passwd=conf.get('ssky','passwd')
+    driver.find_element(By.XPATH,'//input[@type="text"]').send_keys(username)
+    driver.find_element(By.XPATH,'//input[@type="password"]').send_keys(passwd)
+    button=driver.find_element(By.XPATH,'//button[@type="button"]').click()
+
+    
+    #开始查询订票信息
     url='https://www.ssky123.com/online_booking_pc/#/index'
     driver.get(url)
     time.sleep(1)
@@ -57,7 +77,8 @@ def ssky():
             driver.find_element(By.XPATH,'//div[@class="index__content"]/div[@class="row index__place"][1]/div[1]').click()
             driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[1]/div/div/div[7]').click()
 #            driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[2]/div/div[2]').click()#到达：shengshan
-            driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[2]/div/div[1]').click()#到达：sijiao
+#            driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[2]/div/div[1]').click()#到达：sijiao
+            driver.find_element(By.XPATH,'//div[@style="display: flex; width: 100%;"]/div[2]/div/div[3]').click()#到达：枸杞
             print('港口选择完毕')
             break
         except:
@@ -70,7 +91,8 @@ def ssky():
     while True:
         try:
             driver.find_element(By.XPATH,'//div[@class="row index__date"]/div[1]/p[2]').click()
-            driver.find_element(By.XPATH,'//div[@class="wh_content"][2]/div[35]').click()
+#            driver.find_element(By.XPATH,'//div[@class="wh_content"][2]/div[36]').click()
+            driver.find_element(By.XPATH,'//div[@class="wh_content"][2]/div[38]').click()#5.3
             break
         except:
             print('重新选择时间!')
@@ -89,34 +111,46 @@ def ssky():
 
     #booking
     time.sleep(1)
-    driver.find_element(By.XPATH,'//div[@class="list__content"]/div[29]/p[8]/span').click()
+    driver.find_element(By.XPATH,'//div[@class="list__content"]/div[1]/p[8]/span').click()#div[1]为第一个航班
 
 
-    #添加联系人
     url='https://www.ssky123.com/online_booking_pc/#/info'
     driver.get(url)
     time.sleep(1)
-    driver.find_element(By.XPATH,'//div[@class="q-option cursor-pointer no-outline row inline no-wrap items-center selectperson q-checkbox q-focusable"]//span').click()
+    #选择仓位
+    driver.find_element(By.XPATH,'//div[@class="selectport"]/div/div[1]//span').click()#div[1]为第一个舱位
+    #添加联系人
+    driver.find_element(By.XPATH,'//div[@class="q-option cursor-pointer no-outline row inline no-wrap items-center selectperson q-checkbox q-focusable"]//span').click()#第一个联系人
+    driver.find_element(By.XPATH,'//p[@style="display: inline-block; padding: 8px 10px; margin: 0px;"][2]//span').click()#第二个联系人
 #    selector=etree.HTML(driver.page_source)
 #    print(driver.page_source)
 
 
     #下单
     time.sleep(1)
-    print('下单前的句柄',driver.window_handles)
     driver.find_element(By.XPATH,'//div[@style="padding-left: 216px; margin-top: 20px;"]//button').click()
 
 
     #使用模拟点击的方式确认订单
-#    pyautogui.click(1658,669,duration=0.5)
-#    pyautogui.click(1384,917,duration=0.5)
-#    pyautogui.click(1384,917,duration=0.5)
-#    pyautogui.click(1040,902,duration=0.5)
+    pyautogui.press('f')#取消mplayer全屏
+#    pyautogui.click(1651,672,duration=0.2)#如果仓位满候补的情况下的弹窗
+    pyautogui.click(1384,917,duration=0.2)#向下滚动
+    pyautogui.click(1384,917,duration=0.2)#向下滚动
+    pyautogui.click(1018,907,duration=0.2)#核对信息弹窗确定按钮
 
-    pyautogui.click(1658,669,duration=0.2)
-    pyautogui.click(1384,917,duration=0.2)
-    pyautogui.click(1384,917,duration=0.2)
-    pyautogui.click(1040,902,duration=0.2)
+
+    #判断订单是否成功，成功则获取信息
+    time.sleep(5)
+    current_url=driver.current_url
+    print('当前网址：',current_url)
+    html=driver.page_source
+    selector=etree.HTML(html)
+#    print(driver.page_source)
+    order=selector.xpath('//div[@style="margin-top: 20px; margin-bottom: 20px; padding: 31px 64px; height: 686px; background: rgb(255, 255, 255);"]/div[1]/div//text()')
+    print(order)
+    notify('get','ssky',''.join(order))
+
+
 
 
 if __name__ == '__main__':
