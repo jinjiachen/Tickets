@@ -1,9 +1,11 @@
 #coding=utf-8
 
-import pyautogui
-import time
 import os
+if os.name=='nt':
+    import pyautogui
+import time
 from pymouse import PyMouse
+import random
 
 ###给定目标时间和当前时间，计算剩余时间
 def countdown(bell,live):
@@ -30,11 +32,20 @@ if __name__=='__main__':
         print('当前时间：',time.strftime('%H:%M:%S'))
         print('设定时间：',start)
         print('倒计时：%s分%s秒'%(delta[0],delta[1]))
-        os.system('cls')
+        if os.name=='nt':
+            os.system('cls')
+        elif os.name=='posix':
+            os.system('clear')
         if time.strftime("%H:%M:%S")==start:
             now=time.time()
             while time.time()-now<=int(duration):
-                m.click(1150,935,1)
+                if os.name=='nt':
+                    m.click(1150,935,1)#windows中的位置 
 #              pyautogui.click(1150,935,duration=0.0001)
 #              pyautogui.click(1041,935)
+                elif os.name=='posix':
+                    x=random.randint(763,814)
+                    y=random.randint(667,692)
+                    m.click(x,y,1)#linux
+                    time.sleep(0.12)
             break
